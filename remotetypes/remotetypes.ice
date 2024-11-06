@@ -14,6 +14,7 @@ module RemoteTypes {
     };
 
     interface RType {
+        idempotent string identifier();
         void remove(string item) throws KeyError;
         idempotent int length();
         idempotent bool contains(string item);

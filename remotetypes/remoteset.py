@@ -11,9 +11,14 @@ from remotetypes.customset import StringSet
 class RemoteSet(rt.RSet):
     """Implementation of the remote interface RSet."""
 
-    def __init__(self) -> None:
+    def __init__(self, identifier) -> None:
         """Initialise a RemoteSet with an empty StringSet."""
         self._storage_ = StringSet()
+        self.id_ = identifier
+
+    def identifier(self, current: Optional[Ice.Current] = None) -> str:
+        """Return the identifier of the object."""
+        return self.id_
 
     def remove(self, item: str, current: Optional[Ice.Current] = None) -> None:
         """Remove an item from the StringSet if added. Else, raise a remote exception."""
