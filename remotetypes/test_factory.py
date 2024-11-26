@@ -1,4 +1,4 @@
-import pytest # type : ignore
+import pytest
 from remotetypes.factory import Factory
 from remotetypes.remotedict import RemoteDict
 from remotetypes.remotelist import RemoteList

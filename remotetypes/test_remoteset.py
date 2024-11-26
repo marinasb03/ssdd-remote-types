@@ -1,4 +1,4 @@
-import pytest # type : ignore
+import pytest
 from remotetypes.remoteset import RemoteSet
 import RemoteTypes as rt
 

@@ -13,7 +13,7 @@ class RemoteSet(rt.RSet):
     """Implementation of the remote interface RSet."""
     def __init__(self, identifier) -> None:
         self._storage_ = StringSet()
-        self._iterators:List[str] = []
+        self._iterators = []
         self.id_ = identifier
 
     def identifier(self, current: Optional[Ice.Current] = None) -> str:
@@ -42,7 +42,7 @@ class RemoteSet(rt.RSet):
         return hash(repr(contents))
 
     def iter(self, current: Optional[Ice.Current] = None) -> rt.IterablePrx:
-        iterable = SetIterable(self._storage_)
+        iterable = SetIterable(sorted(self._storage_))
         self._iterators.append(iterable)
         return iterable
 
