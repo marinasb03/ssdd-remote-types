@@ -1,3 +1,4 @@
+"""Pruebas clase remotedict"""
 import pytest
 from remotetypes.remotedict import RemoteDict
 import RemoteTypes as rt

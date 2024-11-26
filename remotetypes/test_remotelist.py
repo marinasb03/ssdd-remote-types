@@ -1,3 +1,4 @@
+"""Pruebas remotelist"""
 import pytest
 from remotetypes.remotelist import RemoteList
 import RemoteTypes as rt
@@ -78,7 +79,7 @@ def test_get_item(remote_list):
     remote_list.append("item2")
     item = remote_list.getItem(0)
     assert item == "item1"
-    
+
     item = remote_list.getItem(1)
     assert item == "item2"
 

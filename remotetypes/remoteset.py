@@ -11,7 +11,9 @@ from remotetypes.iterable import SetIterable
 
 class RemoteSet(rt.RSet):
     """Implementation of the remote interface RSet."""
+    
     def __init__(self, identifier) -> None:
+        """Inicialización"""
         self._storage_ = StringSet()
         self._iterators = []
         self.id_ = identifier
@@ -42,11 +44,13 @@ class RemoteSet(rt.RSet):
         return hash(repr(contents))
 
     def iter(self, current: Optional[Ice.Current] = None) -> rt.IterablePrx:
+        """Iterador"""
         iterable = SetIterable(sorted(self._storage_))
         self._iterators.append(iterable)
         return iterable
 
     def add(self, item: str, current: Optional[Ice.Current] = None) -> None:
+        """Añadir"""
         self.invalidate_iterators()
         self._storage_.add(item)
 
@@ -59,6 +63,8 @@ class RemoteSet(rt.RSet):
             raise rt.KeyError() from exc
 
     def invalidate_iterators(self) -> None:
+        """invalidar"""
         for it in self._iterators:
             it.invalidate()
         self._iterators.clear()
+        
