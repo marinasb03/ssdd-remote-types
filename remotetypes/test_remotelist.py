@@ -1,4 +1,4 @@
-"""Pruebas remotelist"""
+"""Pruebas remotelist."""
 import pytest
 from remotetypes.remotelist import RemoteList
 import RemoteTypes as rt

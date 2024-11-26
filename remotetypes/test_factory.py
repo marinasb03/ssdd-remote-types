@@ -1,4 +1,4 @@
-"""Pruebas clase factory"""
+"""Pruebas clase factory."""
 import pytest
 from remotetypes.factory import Factory
 from remotetypes.remotedict import RemoteDict
