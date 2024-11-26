@@ -6,14 +6,14 @@ import Ice
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 
 from remotetypes.customset import StringSet
+from remotetypes.iterable import SetIterable
 
 
 class RemoteSet(rt.RSet):
     """Implementation of the remote interface RSet."""
-
     def __init__(self, identifier) -> None:
-        """Initialise a RemoteSet with an empty StringSet."""
         self._storage_ = StringSet()
+        self._iterators = []
         self.id_ = identifier
 
     def identifier(self, current: Optional[Ice.Current] = None) -> str:
@@ -42,10 +42,12 @@ class RemoteSet(rt.RSet):
         return hash(repr(contents))
 
     def iter(self, current: Optional[Ice.Current] = None) -> rt.IterablePrx:
-        """Create an iterable object."""
+        iterable = SetIterable(sorted(self._storage_))
+        self._iterators.append(iterable)
+        return iterable
 
     def add(self, item: str, current: Optional[Ice.Current] = None) -> None:
-        """Add a new string to the StringSet."""
+        self.invalidate_iterators()
         self._storage_.add(item)
 
     def pop(self, current: Optional[Ice.Current] = None) -> str:
@@ -55,3 +57,8 @@ class RemoteSet(rt.RSet):
 
         except KeyError as exc:
             raise rt.KeyError() from exc
+
+    def invalidate_iterators(self) -> None:
+        for it in self._iterators:
+            it.invalidate()
+        self._iterators.clear()

@@ -1,11 +1,84 @@
-"""Needed classes for implementing the Iterable interface for different types of objects."""
-
+from typing import Optional
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
+import Ice
 
-# TODO: It's very likely that the same Iterable implementation doesn't fit
-# for the 3 needed types. It is valid to implement 3 different classes implementing
-# the same interface and use an object from different implementations when needed.
+class ListIterable(rt.Iterable):
+    """Iterable implementation for RemoteList."""
 
+    def __init__(self, data: list[str]) -> None:
+        self._data = data
+        self._index = 0
+        self._valid = True
+    
+    def __iter__(self):
+        return self
 
-class Iterable(rt.Iterable):
-    """Skeleton for an Iterable implementation."""
+    def __next__(self, current: Optional[Ice.Current] = None) -> str:
+        if not self._valid:
+            raise rt.CancelIteration()
+
+        if self._index >= len(self._data):
+            raise rt.StopIteration()
+
+        value = self._data[self._index]
+        self._index += 1
+        return value
+
+    def next(self, current: Optional[Ice.Current] = None) -> str:
+        return self.__next__(current)
+    
+    def invalidate(self) -> None:
+        self._valid = False
+
+class DictIterable(rt.Iterable):
+    """Iterable implementation for RemoteDict."""
+
+    def __init__(self, data: dict[str, str]) -> None:
+        self._keys = list(data.keys())
+        self._index = 0
+        self._valid = True
+
+    def __iter__(self):
+        return self
+
+    def __next__(self, current: Optional[Ice.Current] = None) -> str:
+        if not self._valid:
+            raise rt.CancelIteration()
+
+        if self._index >= len(self._keys):
+            raise rt.StopIteration()
+
+        key = self._keys[self._index]
+        self._index += 1
+        return key
+
+    def next(self, current: Optional[Ice.Current] = None) -> str:
+        return self.__next__(current)
+
+    def invalidate(self) -> None:
+        self._valid = False
+
+class SetIterable(rt.Iterable):
+    """Iterable implementation for RemoteSet."""
+
+    def __init__(self, data: set[str]) -> None:
+        self._items = iter(data)
+        self._valid = True
+
+    def __iter__(self):
+        return self
+
+    def __next__(self, current: Optional[Ice.Current] = None) -> str:
+        if not self._valid:
+            raise rt.CancelIteration()
+
+        try:
+            return next(self._items)
+        except StopIteration:
+            raise rt.StopIteration()
+    
+    def next(self, current: Optional[Ice.Current] = None) -> str:
+        return self.__next__(current)
+
+    def invalidate(self) -> None:
+        self._valid = False
