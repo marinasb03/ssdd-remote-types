@@ -1,4 +1,4 @@
-import pytest
+import pytest # type : ignore
 from remotetypes.remotelist import RemoteList
 import RemoteTypes as rt
 
