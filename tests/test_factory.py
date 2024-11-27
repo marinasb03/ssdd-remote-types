@@ -1,5 +1,5 @@
 """Pruebas clase factory."""
-import pytest
+import pytest #type: ignore
 from remotetypes.factory import Factory
 from remotetypes.remotedict import RemoteDict
 from remotetypes.remotelist import RemoteList

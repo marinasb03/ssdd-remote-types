@@ -1,3 +1,4 @@
+"""Clase remoteset."""
 from typing import List
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 from remotetypes.customset import StringSet

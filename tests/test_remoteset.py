@@ -1,5 +1,5 @@
 """Pruebas remoteset."""
-import pytest
+import pytest #type: ignore
 from remotetypes.remoteset import RemoteSet
 import RemoteTypes as rt
 

@@ -1,5 +1,5 @@
 """Pruebas clase remotedict."""
-import pytest
+import pytest #type: ignore
 from remotetypes.remotedict import RemoteDict
 import RemoteTypes as rt
 
