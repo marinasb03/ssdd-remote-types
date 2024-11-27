@@ -1,10 +1,10 @@
 """Clase remotelist."""
 from typing import Optional
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
-import Ice
 from remotetypes.iterable import ListIterable
 class RemoteList(rt.RList):
     """Implementation of the RList interface."""
+
     def __init__(self, identifier: str) -> None:
         """Init."""
         self._storage_ = []
@@ -35,7 +35,7 @@ class RemoteList(rt.RList):
         return hash(repr(self._storage_))
 
     def iter(self) -> rt.IterablePrx:
-        """Iter."""
+        """Itera sobre los elementos de la colección."""
         iterable = ListIterable(self._storage_)
         self._iterators.append(iterable)
         return iterable

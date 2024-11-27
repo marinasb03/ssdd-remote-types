@@ -7,10 +7,12 @@ class Server(Ice.Application):
     """Inicio de clase."""
 
     def __init__(self):
+        """Init."""
         super().__init__()
         self.logger = logging.getLogger(__file__)
 
     def run(self, args: list[str]) -> int:
+        """Run."""
         factory_servant = Factory()
         adapter = (
             self.communicator().createObjectAdapterWithEndpoints("remotetypes", "default -p 10000")

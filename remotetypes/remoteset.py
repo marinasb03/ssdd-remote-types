@@ -1,8 +1,4 @@
 """Needed classes to implement and serve the RSet type."""
-
-from typing import Optional
-
-import Ice
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 
 from remotetypes.customset import StringSet

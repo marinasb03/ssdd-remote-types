@@ -31,6 +31,7 @@ class Factory(rt.Factory):
     """Implementation of the Factory interface."""
 
     def __init__(self, persistence_file: str = "data.json") -> None:
+        """Init."""
         self._objects = {}
         self._persistence_file = persistence_file
         self._load_persistent_data()
@@ -69,9 +70,7 @@ class Factory(rt.Factory):
 
         PersistenceManager.save(self._persistence_file, data)
 
-    def get(
-        self, typeName: rt.TypeName, identifier: Optional[str] = None, 
-        current: Optional[Ice.Current] = None
+    def get(self, typeName: rt.TypeName, identifier: Optional[str] = None, current: Optional[Ice.Current] = None
     ) -> rt.RTypePrx:
         """Retrieve or create an object."""
         if not identifier:
@@ -90,10 +89,7 @@ class Factory(rt.Factory):
             raise rt.TypeError(description="Invalid type name")
 
         if current and current.adapter:
-            proxy = (
-                current.adapter.add(obj, 
-                current.adapter.getCommunicator().stringToIdentity(identifier))
-            )
+            proxy = current.adapter.add(obj, current.adapter.getCommunicator().stringToIdentity(identifier))
             self._objects[identifier] = proxy
         else:
             self._objects[identifier] = obj

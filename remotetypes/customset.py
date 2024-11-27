@@ -5,6 +5,7 @@ class StringSet(set):
     """Conjunto que solo admite elementos de tipo str."""
 
     def __init__(self, *args, force_upper_case: Optional[bool] = False, **kwargs):
+        """Init."""
         if args:
             for item in args[0]:
                 if not isinstance(item, str):
@@ -14,6 +15,7 @@ class StringSet(set):
         super().__init__(*args, **kwargs)
 
     def add(self, item: str) -> None:
+        """Add."""
         if not isinstance(item, str):
             raise ValueError("Solo se permiten cadenas.")
         if self.upper_case:
@@ -21,6 +23,7 @@ class StringSet(set):
         super().add(item)
 
     def __contains__(self, o: object) -> bool:
+        """Contains."""
         if not isinstance(o, str):
             o = str(o)
         if self.upper_case:

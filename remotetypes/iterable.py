@@ -1,7 +1,5 @@
 """Clase iterable."""
-from typing import Optional
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
-import Ice
 
 class ListIterable(rt.Iterable):
     """Iterable implementation for RemoteList."""
@@ -13,7 +11,7 @@ class ListIterable(rt.Iterable):
         self._valid = True
 
     def __iter__(self):
-        """Iter."""
+        """Itera sobre los elementos de la colección."""
         return self
 
     def __next__(self) -> str:
@@ -46,7 +44,7 @@ class DictIterable(rt.Iterable):
         self._valid = True
 
     def __iter__(self):
-        """Iter."""
+        """Itera sobre los elementos de la colección."""
         return self
 
     def __next__(self) -> str:
@@ -78,7 +76,7 @@ class SetIterable(rt.Iterable):
         self._valid = True
 
     def __iter__(self):
-        """Iter."""
+        """Itera sobre los elementos de la colección."""
         return self
 
     def __next__(self) -> str:
