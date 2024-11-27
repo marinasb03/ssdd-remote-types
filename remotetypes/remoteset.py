@@ -63,7 +63,7 @@ class RemoteSet(rt.RSet):
             raise rt.KeyError() from exc
 
     def invalidate_iterators(self) -> None:
-        """invalidar."""
+        """Invalidar."""
         for it in self._iterators:
             it.invalidate()
         self._iterators.clear()
