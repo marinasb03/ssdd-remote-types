@@ -1,15 +1,17 @@
 """Clase remotedict."""
+from typing import Dict, List
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 from remotetypes.iterable import DictIterable
+
 
 class RemoteDict(rt.RDict):
     """Implementation of the RDict interface."""
 
     def __init__(self, identifier: str) -> None:
         """Inicialización."""
-        self._storage_ = {}
-        self._iterators = []
-        self.id_ = identifier
+        self._storage_: Dict[str, str] = {}
+        self._iterators: List[DictIterable] = []
+        self.id_: str = identifier
 
     def identifier(self) -> str:
         """Return the identifier of the object."""

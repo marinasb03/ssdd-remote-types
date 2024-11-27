@@ -1,15 +1,17 @@
 """Clase remotelist."""
-from typing import Optional
+from typing import List, Optional
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 from remotetypes.iterable import ListIterable
+
+
 class RemoteList(rt.RList):
     """Implementation of the RList interface."""
 
     def __init__(self, identifier: str) -> None:
         """Init."""
-        self._storage_ = []
-        self._iterators = []
-        self.id_ = identifier
+        self._storage_: List[str] = []
+        self._iterators: List[ListIterable] = []
+        self.id_: str = identifier
 
     def identifier(self) -> str:
         """Return the identifier of the object."""

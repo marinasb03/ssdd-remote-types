@@ -1,6 +1,5 @@
-"""Needed classes to implement and serve the RSet type."""
+from typing import List
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
-
 from remotetypes.customset import StringSet
 from remotetypes.iterable import SetIterable
 
@@ -8,11 +7,11 @@ from remotetypes.iterable import SetIterable
 class RemoteSet(rt.RSet):
     """Implementation of the remote interface RSet."""
 
-    def __init__(self, identifier) -> None:
+    def __init__(self, identifier: str) -> None:
         """Inicialización."""
-        self._storage_ = StringSet()
-        self._iterators = []
-        self.id_ = identifier
+        self._storage_: StringSet = StringSet()
+        self._iterators: List[SetIterable] = []
+        self.id_: str = identifier
 
     def identifier(self) -> str:
         """Return the identifier of the object."""
@@ -41,7 +40,7 @@ class RemoteSet(rt.RSet):
 
     def iter(self) -> rt.IterablePrx:
         """Iterador."""
-        iterable = SetIterable(sorted(self._storage_))
+        iterable = SetIterable(set(sorted(self._storage_)))
         self._iterators.append(iterable)
         return iterable
 
@@ -54,7 +53,6 @@ class RemoteSet(rt.RSet):
         """Remove and return an element from the storage."""
         try:
             return self._storage_.pop()
-
         except KeyError as exc:
             raise rt.KeyError() from exc
 

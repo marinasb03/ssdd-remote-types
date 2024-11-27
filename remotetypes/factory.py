@@ -1,12 +1,12 @@
 """Clase factory."""
+from typing import Dict, Union, Optional, Set
 import json
-from typing import Optional
 import Ice
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 from remotetypes.remotedict import RemoteDict
 from remotetypes.remotelist import RemoteList
 from remotetypes.remoteset import RemoteSet
-
+from remotetypes.customset import StringSet
 
 class PersistenceManager:
     """Utility class to handle persistence."""
@@ -30,10 +30,12 @@ class PersistenceManager:
 class Factory(rt.Factory):
     """Implementation of the Factory interface."""
 
+    StringSet = Set[str]
+
     def __init__(self, persistence_file: str = "data.json") -> None:
         """Init."""
-        self._objects = {}
-        self._persistence_file = persistence_file
+        self._objects: Dict[str, Union[RemoteDict, RemoteList, RemoteSet]] = {}
+        self._persistence_file: str = persistence_file
         self._load_persistent_data()
 
     def _load_persistent_data(self) -> None:
@@ -51,7 +53,8 @@ class Factory(rt.Factory):
                 obj._storage_ = content
             elif obj_type == "RSet":
                 obj = RemoteSet(identifier)
-                obj._storage_ = set(content)
+                obj._storage_ = StringSet(content)
+
             else:
                 continue
 
