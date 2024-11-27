@@ -1,3 +1,4 @@
+"""Clase customset."""
 from typing import Optional
 
 class StringSet(set):
@@ -8,7 +9,7 @@ class StringSet(set):
             for item in args[0]:
                 if not isinstance(item, str):
                     raise ValueError("Todos los elementos deben ser cadenas de texto.")
-        
+
         self.upper_case = force_upper_case
         super().__init__(*args, **kwargs)
 

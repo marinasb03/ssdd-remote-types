@@ -1,3 +1,4 @@
+"""Clase factory."""
 import json
 from typing import Optional
 import Ice
@@ -13,14 +14,14 @@ class PersistenceManager:
     @staticmethod
     def save(filepath: str, data: dict) -> None:
         """Save data to a JSON file."""
-        with open(filepath, "w") as f:
+        with open(filepath, "w",encoding="utf-8") as f:
             json.dump(data, f)
 
     @staticmethod
     def load(filepath: str) -> dict:
         """Load data from a JSON file."""
         try:
-            with open(filepath, "r") as f:
+            with open(filepath, "r",encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
             return {}
@@ -65,11 +66,12 @@ class Factory(rt.Factory):
                 data[identifier] = {"type": "RList", "content": obj._storage_}
             elif isinstance(obj, RemoteSet):
                 data[identifier] = {"type": "RSet", "content": list(obj._storage_)}
-        
+
         PersistenceManager.save(self._persistence_file, data)
 
     def get(
-        self, typeName: rt.TypeName, identifier: Optional[str] = None, current: Optional[Ice.Current] = None
+        self, typeName: rt.TypeName, identifier: Optional[str] = None, 
+        current: Optional[Ice.Current] = None
     ) -> rt.RTypePrx:
         """Retrieve or create an object."""
         if not identifier:
@@ -88,7 +90,10 @@ class Factory(rt.Factory):
             raise rt.TypeError(description="Invalid type name")
 
         if current and current.adapter:
-            proxy = current.adapter.add(obj, current.adapter.getCommunicator().stringToIdentity(identifier))
+            proxy = (
+                current.adapter.add(obj, 
+                current.adapter.getCommunicator().stringToIdentity(identifier))
+            )
             self._objects[identifier] = proxy
         else:
             self._objects[identifier] = obj
@@ -97,4 +102,3 @@ class Factory(rt.Factory):
         self._save_persistent_data()
 
         return proxy
-

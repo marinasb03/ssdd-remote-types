@@ -1,3 +1,4 @@
+"""Pruebas clase iterable."""
 from remotetypes.iterable import ListIterable, DictIterable, SetIterable
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 
@@ -43,7 +44,7 @@ def test_set_iterable():
     seen = set()
     for _ in range(3):
         seen.add(iterator.next())
-    
+
     assert seen == {"a", "b", "c"}
 
     try:

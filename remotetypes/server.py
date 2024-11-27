@@ -1,8 +1,10 @@
+"""Clase servidor."""
 import logging
 import Ice
 from remotetypes.factory import Factory
 
 class Server(Ice.Application):
+    """Inicio de clase."""
 
     def __init__(self):
         super().__init__()
@@ -10,7 +12,9 @@ class Server(Ice.Application):
 
     def run(self, args: list[str]) -> int:
         factory_servant = Factory()
-        adapter = self.communicator().createObjectAdapterWithEndpoints("remotetypes", "default -p 10000")
+        adapter = (
+            self.communicator().createObjectAdapterWithEndpoints("remotetypes", "default -p 10000")
+        )
         identity = self.communicator().stringToIdentity("factory")
         proxy = adapter.add(factory_servant, identity)
         self.logger.info('Proxy: "%s"', proxy)
@@ -19,4 +23,3 @@ class Server(Ice.Application):
         self.shutdownOnInterrupt()
         self.communicator().waitForShutdown()
         return 0
-
