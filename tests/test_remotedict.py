@@ -83,13 +83,10 @@ def test_iter(remote_dict):
     remote_dict.setItem("key2", "value2")
     iterator = remote_dict.iter()
 
-    # Verificar que el primer item es "key1"
     assert next(iterator) == "key1"
 
-    # Verificar que el siguiente item es "key2"
     assert next(iterator) == "key2"
 
-    # Verificar que StopIteration es lanzado cuando no hay más elementos
     with pytest.raises(rt.StopIteration):
         next(iterator)
 
@@ -101,4 +98,4 @@ def test_invalidate_iterators(remote_dict):
     remote_dict.setItem("key2", "value2")
     remote_dict.invalidate_iterators()
     new_iterator = remote_dict.iter()
-    assert new_iterator != iterator  # Ensure new iterator is created
+    assert new_iterator != iterator

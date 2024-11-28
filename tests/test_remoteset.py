@@ -74,13 +74,10 @@ def test_iter(remote_set):
     remote_set.add("item2")
     iterator = remote_set.iter()
 
-    # Verify that the first item is "item1"
     assert next(iterator) == "item1"
 
-    # Verify that the next item is "item2"
     assert next(iterator) == "item2"
 
-    # Verify that StopIteration is raised when there are no more elements
     with pytest.raises(rt.StopIteration):
         next(iterator)
 
@@ -92,4 +89,4 @@ def test_invalidate_iterators(remote_set):
     remote_set.add("item2")
     remote_set.invalidate_iterators()
     new_iterator = remote_set.iter()
-    assert new_iterator != iterator  # Ensure a new iterator is created
+    assert new_iterator != iterator

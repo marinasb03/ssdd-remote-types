@@ -8,7 +8,7 @@ def test_list_iterable():
     data = ["a", "b", "c"]
     iterator = ListIterable(data)
 
-    assert iter(iterator) is iterator  # Verificar que iter devuelve el propio objeto
+    assert iter(iterator) is iterator
     assert iterator.next() == "a"
     assert iterator.next() == "b"
     assert iterator.next() == "c"
@@ -24,7 +24,7 @@ def test_dict_iterable():
     data = {"key1": "value1", "key2": "value2"}
     iterator = DictIterable(data)
 
-    assert iter(iterator) is iterator  # Verificar que iter devuelve el propio objeto
+    assert iter(iterator) is iterator
     assert iterator.next() == "key1"
     assert iterator.next() == "key2"
 
@@ -39,7 +39,7 @@ def test_set_iterable():
     data = {"a", "b", "c"}
     iterator = SetIterable(data)
 
-    assert iter(iterator) is iterator  # Verificar que iter devuelve el propio objeto
+    assert iter(iterator) is iterator
 
     seen = set()
     for _ in range(3):
@@ -58,7 +58,7 @@ def test_invalidate_iterator():
     data = ["x", "y", "z"]
     iterator = ListIterable(data)
 
-    iterator.invalidate()  # Invalidar el iterador
+    iterator.invalidate()
 
     try:
         iterator.next()

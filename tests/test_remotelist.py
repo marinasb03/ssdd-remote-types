@@ -88,7 +88,7 @@ def test_get_item_index_error(remote_list):
     """Test getting an item from the list with an invalid index."""
     remote_list.append("item1")
     with pytest.raises(rt.IndexError):
-        remote_list.getItem(1)  # Index 1 is out of bounds, as only "item1" is in the list.
+        remote_list.getItem(1)
 
 
 def test_iter(remote_list):
@@ -97,13 +97,10 @@ def test_iter(remote_list):
     remote_list.append("item2")
     iterator = remote_list.iter()
 
-    # Verificar que el primer item es "item1"
     assert next(iterator) == "item1"
 
-    # Verificar que el siguiente item es "item2"
     assert next(iterator) == "item2"
 
-    # Verificar que StopIteration es lanzado cuando no hay más elementos
     with pytest.raises(rt.StopIteration):
         next(iterator)
 
@@ -115,4 +112,4 @@ def test_invalidate_iterators(remote_list):
     remote_list.append("item2")
     remote_list.invalidate_iterators()
     new_iterator = remote_list.iter()
-    assert new_iterator != iterator  # Ensure new iterator is created
+    assert new_iterator != iterator
