@@ -41,7 +41,7 @@ class RemoteSet(rt.RSet):
 
     def iter(self) -> rt.IterablePrx:
         """Iterador."""
-        iterable = SetIterable(set(sorted(self._storage_)))
+        iterable = SetIterable(sorted(self._storage_))
         self._iterators.append(iterable)
         return iterable
 
