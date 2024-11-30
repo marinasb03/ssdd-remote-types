@@ -70,7 +70,7 @@ Esta prueba verifica los siguientes escenarios:
 
 ### Exclusión de la prueba del repositorio
 
-Dado que el servidor (activo) no se incluye en el repositorio (por motivos como la infraestructura o configuración específica), esta prueba no se añadió directamente al directorio /tests. Esto evita errores en sistemas donde el servidor no está configurado o en ejecución. Sin embargo, la prueba ha sido validada localmente y funciona correctamente bajo las condiciones especificadas en el archivo requisitos.md.
+Dado que el servidor (activo) no se incluye en el repositorio, esta prueba no se añadió directamente al directorio /tests. Esto evita errores en sistemas donde el servidor no está configurado o en ejecución. Sin embargo, la prueba ha sido validada localmente y funciona correctamente bajo las condiciones especificadas en el archivo requisitos.md.
 
 ### Validación del proyecto
 

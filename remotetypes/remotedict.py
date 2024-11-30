@@ -8,7 +8,7 @@ class RemoteDict(rt.RDict):
     """Implementation of the RDict interface."""
 
     def __init__(self, identifier: str) -> None:
-        """Inicialización."""
+        """Init."""
         self._storage_: Dict[str, str] = {}
         self._iterators: List[DictIterable] = []
         self.id_: str = identifier
