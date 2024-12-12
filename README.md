@@ -1,4 +1,45 @@
 # Marina Sobrino Blanco
+## Mejoras
+
+Tras verlo detenidamente me he dado cuenta que de la forma que yo comprobaba sus funcionalidades era local, lo cual no era lo que se me pedía. Por lo que he eliminado las pruebas locales que había creado para el servidor, y a su vez he creado un cliente que pudiera comunicarse con el servidor y realizar acciones. 
+
+Lo cual al inicio, bien como me esperaba me saltaba todo el rato error, pero tras las modificaciones pertinentes de convertir objetos de un tipo que la clase factory no pedía. Tras arreglarlo y vlver a ejecutar mi cliente, ahora si me funcionaba correctamente el servidor.
+
+Su funcionamiento es simplemente:
+```
+slice2py -I. remotetypes.ice
+```
+Tras ello lanzamos el servidor: 
+```
+remotetypes --Ice.Config=config/remotetypes.config
+```
+Y con ello el cliente, sabiendo que si el servidor no esta activo nuestro cliente no ejecutará:
+```
+python3 Cliente.py
+```
+La simplicidad de la ejecución del cliente se debe a que ya dentro del propio código he facilitado la configuración de mi servidor, para que sepa donde se debe conectar: 
+```
+
+    proxy_string = "factory:default -p 10000"
+    print(f"Usando el proxy: {proxy_string}")
+
+    try:
+        proxy = self.communicator().stringToProxy(proxy_string)
+    except Exception as e:
+        print(f"Error al crear el proxy: {e}")
+        return -1
+
+    factory = rt.FactoryPrx.checkedCast(proxy)
+    if not factory:
+        print("No se pudo conectar con el servidor.")
+        return -1
+```
+Sabiendo que mi archivo de configuración sigue siendo el mismo del principio:
+```
+remotetypes.Endpoints=tcp -p 10000
+```
+Añadir que he eliminado las pruebas que se hacía de forma local, dejando solo este cliente como prueba del funcionamiento del servidor.
+
 ## Configuración del Servidor y Pruebas
 ### Configuración inicial del servidor
 

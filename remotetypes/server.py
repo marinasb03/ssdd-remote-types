@@ -25,3 +25,4 @@ class Server(Ice.Application):
         self.shutdownOnInterrupt()
         self.communicator().waitForShutdown()
         return 0
+

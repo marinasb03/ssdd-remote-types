@@ -1,4 +1,6 @@
 """Clase iterable."""
+from typing import Optional
+import Ice
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 
 class ListIterable(rt.Iterable):
@@ -14,7 +16,7 @@ class ListIterable(rt.Iterable):
         """Itera sobre los elementos de la colección."""
         return self
 
-    def __next__(self) -> str:
+    def next(self, current: Optional[Ice.Current] = None) -> str:
         """Next iterador."""
         if not self._valid:
             raise rt.CancelIteration()
@@ -25,10 +27,6 @@ class ListIterable(rt.Iterable):
         value = self._data[self._index]
         self._index += 1
         return value
-
-    def next(self) -> str:
-        """Next."""
-        return self.__next__()
 
     def invalidate(self) -> None:
         """Invalidate."""
@@ -47,52 +45,42 @@ class DictIterable(rt.Iterable):
         """Itera sobre los elementos de la colección."""
         return self
 
-    def __next__(self) -> str:
+    def next(self, current: Optional[Ice.Current] = None) -> str:
         """Next iterador."""
         if not self._valid:
             raise rt.CancelIteration()
 
-        if self._index >= len(self._keys):
+        if self._index >= len(self._data):
             raise rt.StopIteration()
 
-        key = self._keys[self._index]
+        value = self._data[self._index]
         self._index += 1
-        return key
-
-    def next(self) -> str:
-        """Next."""
-        return self.__next__()
+        return value
 
     def invalidate(self) -> None:
         """Invalidate."""
         self._valid = False
 
 class SetIterable(rt.Iterable):
-    """Iterable implementation for RemoteSet."""
+    """Implementación del iterador para RemoteSet."""
+    
+    def __init__(self, items):
+        """Inicializa el iterador."""
+        self._items = iter(items)
+        self._invalidated = False 
+        self._index = 0 
 
-    def __init__(self, data: set[str]) -> None:
-        """Init conjuntos."""
-        self._items = iter(data)
-        self._valid = True
-
-    def __iter__(self):
-        """Itera sobre los elementos de la colección."""
-        return self
-
-    def __next__(self) -> str:
-        """Next iterador."""
-        if not self._valid:
-            raise rt.CancelIteration()
-
+    def next(self, current: Optional[Ice.Current] = None):
+        """Devuelve el siguiente elemento del iterador."""
+        if self._invalidated:
+            raise Ice.ObjectNotExistException("El iterador ha sido invalidado.")
         try:
             return next(self._items)
         except StopIteration:
             raise rt.StopIteration()
 
-    def next(self) -> str:
-        """Next."""
-        return self.__next__()
-
-    def invalidate(self) -> None:
-        """Invalidate."""
-        self._valid = False
+    def invalidate(self):
+        """Invalidar el iterador."""
+        self._invalidated = True
+        self._items = iter([])
+        self._index = 0
