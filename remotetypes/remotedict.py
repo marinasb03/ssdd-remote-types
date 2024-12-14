@@ -38,10 +38,21 @@ class RemoteDict(rt.RDict):
         return hash(repr(items))
 
     def iter(self, current: Optional[Ice.Current] = None) -> rt.IterablePrx:
-        """Iterador."""
-        iterable = DictIterable(self._storage_)
-        self._iterators.append(iterable)
-        return iterable
+        """Crear y devolver un iterador remoto."""
+        try:
+            iterable = DictIterable(self._storage_)
+
+            if current and current.adapter:
+                identity = current.adapter.getCommunicator().stringToIdentity(f"iter-{self.id_}-{len(self._iterators)}")
+                proxy = rt.IterablePrx.uncheckedCast(current.adapter.add(iterable, identity))
+                self._iterators.append(iterable)
+                return proxy
+            else:
+                raise RuntimeError("No se puede registrar el iterador porque no hay adaptador disponible.")
+        except Exception as e:
+            print(f"Error en el iterador: {e}")
+            raise
+
 
     def setItem(self, key: str, item: str, current: Optional[Ice.Current] = None) -> None:
         """Set iterador."""

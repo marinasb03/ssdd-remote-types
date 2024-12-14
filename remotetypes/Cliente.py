@@ -22,10 +22,11 @@ class RSetClient:
             print("4. Comprobar existencia de un elemento")
             print("5. Obtener hash del RSet")
             print("6. Ver identificador")
-            print("7. Salir")
+            print("7. Iterar sobre los elementos del RList")
+            print("8. Salir")
 
             try:
-                choice = int(input("Selecciona una opción (1-7): "))
+                choice = int(input("Selecciona una opción (1-8): "))
             except ValueError as e:
                 print(f"Entrada no válida: {e}")
                 continue
@@ -57,6 +58,16 @@ class RSetClient:
                 identifier = rset_proxy.identifier()
                 print(f"Identificador del RSet: {identifier}")
             elif choice == 7:
+                iterator = rlist_proxy.iter()
+                print("Iterando sobre los elementos del RList:")
+                while True:
+                    try:
+                        item = iterator.next()
+                        print(item)
+                    except rt.StopIteration as e:
+                        print("Terminado de iterar, con excepcion: ", e)
+                        break
+            elif choice == 8:
                 print("Saliendo...")
                 break
             else:
@@ -78,10 +89,13 @@ class RListClient:
             print("4. Comprobar existencia de un elemento")
             print("5. Obtener hash del RList")
             print("6. Ver identificador")
-            print("7. Salir")
+            print("7. Iterar sobre los elementos del RList")
+            print("8. Salir")
+            
+            
 
             try:
-                choice = int(input("Selecciona una opción (1-7): "))
+                choice = int(input("Selecciona una opción (1-8): "))
             except ValueError as e:
                 print(f"Entrada no válida: {e}")
                 continue
@@ -113,6 +127,16 @@ class RListClient:
                 identifier = rlist_proxy.identifier()
                 print(f"Identificador del RList: {identifier}")
             elif choice == 7:
+                iterator = rlist_proxy.iter()
+                print("Iterando sobre los elementos del RList:")
+                while True:
+                    try:
+                        item = iterator.next()
+                        print(item)
+                    except rt.StopIteration as e:
+                        print("Terminado de iterar, con excepcion: ", e)
+                        break
+            elif choice == 8:
                 print("Saliendo...")
                 break
             else:
@@ -135,10 +159,11 @@ class RDictClient:
             print("5. Comprobar existencia de una clave")
             print("6. Obtener hash del RDict")
             print("7. Ver identificador")
-            print("8. Salir")
+            print("8. Iterar sobre los elementos del RList")
+            print("9. Salir")
 
             try:
-                choice = int(input("Selecciona una opción (1-8): "))
+                choice = int(input("Selecciona una opción (1-9): "))
             except ValueError as e:
                 print(f"Entrada no válida: {e}")
                 continue
@@ -178,6 +203,16 @@ class RDictClient:
                 identifier = rdict_proxy.identifier()
                 print(f"Identificador del RDict: {identifier}")
             elif choice == 8:
+                iterator = rdict_proxy.iter()
+                print("Iterando sobre las claves del RDict:")
+                while True:
+                    try:
+                        key = iterator.next()
+                        print(key)
+                    except rt.StopIteration as e:
+                        print("iteracion termianda, excepcion:", e)
+                        break
+            elif choice == 9:
                 print("Saliendo...")
                 break
             else:

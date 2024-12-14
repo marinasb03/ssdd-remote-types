@@ -46,14 +46,14 @@ class DictIterable(rt.Iterable):
         return self
 
     def next(self, current: Optional[Ice.Current] = None) -> str:
-        """Next iterador."""
+        """Devuelve la siguiente clave del iterador."""
         if not self._valid:
             raise rt.CancelIteration()
 
-        if self._index >= len(self._data):
+        if self._index >= len(self._keys):  # Cambiar _data a _keys
             raise rt.StopIteration()
 
-        value = self._data[self._index]
+        value = self._keys[self._index]  # Acceso a _keys, no _data
         self._index += 1
         return value
 

@@ -42,19 +42,24 @@ class RemoteSet(rt.RSet):
         return hash(repr(contents))
 
     def iter(self, current: Optional[Ice.Current] = None) -> rt.IterablePrx:
-        """Iterador."""
+        """Crear y devolver un iterador remoto."""
         try:
             if not self._storage_:
                 raise ValueError("El almacenamiento está vacío o no es un conjunto válido.")
 
-            iterable = SetIterable(sorted(self._storage_))
+            iterable = SetIterable(sorted(self._storage_))  # Crear el iterador
 
-            self._iterators.append(iterable)
-
-            return iterable
+            # Registrar el iterador en el adaptador
+            if current and current.adapter:
+                identity = current.adapter.getCommunicator().stringToIdentity(f"iter-{self.id_}-{len(self._iterators)}")
+                proxy = rt.IterablePrx.uncheckedCast(current.adapter.add(iterable, identity))
+                self._iterators.append(iterable)
+                return proxy
+            else:
+                raise RuntimeError("No se puede registrar el iterador porque no hay adaptador disponible.")
         except Exception as e:
             print(f"Error en el iterador: {e}")
-            raise  
+            raise
 
     def add(self, item: str, current: Optional[Ice.Current] = None) -> None:
         """Añadir."""
