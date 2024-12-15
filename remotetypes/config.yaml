@@ -1,0 +1,5 @@
+kafka:
+  server: "localhost:9092"       # Dirección del servidor Kafka
+  input_topic: "operations"      # Topic para recibir mensajes de eventos
+  output_topic: "results"        # Topic para enviar respuestas
+  group_id: "remote-clients"     # Identificador del grupo de consumidores
