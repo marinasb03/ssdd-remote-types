@@ -107,7 +107,7 @@ He probado múltiples operaciones en los objetos RList, RSet y RDict, y funciona
 {"operations": [{"id": "14", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 10}}]}
 {"operations": [{"id": "15", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 1}}]}
 {"operations": [{"id": "16", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": -1}}]}
-{"operations": [{"id": "1", "object_identifier": "my_list", "object_type": "RList", "operation": "identifier"}]}
+{"operations": [{"id": "1", "object_identifier": "prueba1", "object_type": "RList", "operation": "identifier"}]}
 {"operations": [{"id": "1", "object_identifier": "my_list", "object_type": "RList", "operation": "iter"}]}
 ```
 
