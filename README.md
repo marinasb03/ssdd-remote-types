@@ -1,4 +1,11 @@
 # Marina Sobrino Blanco
+## Mejores Entregable 2
+    
+1. En mi código actual, me aseguro que el mensaje recibido de Kafka sea un array de objetos JSON (lista de diccionarios). Cada evento recibido se maneja correctamente como una lista de diccionarios.
+2. Ya se está publicando directamente el array de respuestas (responses), sin envolverlo en un diccionario. En el código actual, en lugar de enviar un diccionario con la clave "responses", envío directamente el array responses.
+3. Actualmente, el proxy al servicio remotetypes ya no está hardcoded en el código. En lugar de definirlo de forma rígida en la línea 109 de kafka_client.py, el proxy ahora se carga de forma configurable desde el archivo config.yaml
+4. El código ya tiene una estructura que sigue parcialmente el principio, ya que he encapsulado las operaciones en clases específicas como RDictHandler, RListHandler, y RSetHandler. Además, la fábrica OperationHandlerFactory facilita la elección del manejador adecuado según el tipo de objeto.
+
 ## Entregable 2
 ### Introducción
 
@@ -89,74 +96,47 @@ Consumidor Kafka:
 He probado múltiples operaciones en los objetos RList, RSet y RDict, y funcionan correctamente. Todas las operaciones inválidas, como iter, generan errores apropiados, cumpliendo con los requisitos del enunciado.
 
 #### OPERACIONES PARA LA RLIST:
+
 ```
-{"operations": [{"id": "1", "object_identifier": "my_list", "object_type": "RList", "operation": "append", "args": {"item": "apple"}}]}
-{"operations": [{"id": "7", "object_identifier": "my_list", "object_type": "RList", "operation": "append", "args": {"item": "orange"}}]}
-{"operations": [{"id": "2", "object_identifier": "my_list", "object_type": "RList", "operation": "append", "args": {"item": "banana"}}]}
-{"operations": [{"id": "3", "object_identifier": "my_list", "object_type": "RList", "operation": "length"}]}
-{"operations": [{"id": "4", "object_identifier": "my_list", "object_type": "RList", "operation": "contains", "args": {"item": "apple"}}]}
-{"operations": [{"id": "5", "object_identifier": "my_list", "object_type": "RList", "operation": "contains", "args": {"item": "grape"}}]}
-{"operations": [{"id": "6", "object_identifier": "my_list", "object_type": "RList", "operation": "remove", "args": {"item": "banana"}}]} 
-{"operations": [{"id": "7", "object_identifier": "my_list", "object_type": "RList", "operation": "remove", "args": {"item": "orange"}}]}
-{"operations": [{"id": "8", "object_identifier": "my_list", "object_type": "RList", "operation": "hash"}]}
-{"operations": [{"id": "9", "object_identifier": "my_list", "object_type": "RList", "operation": "hash"}]}
-{"operations": [{"id": "10", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {}}]}
-{"operations": [{"id": "11", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": 0}}]}
-{"operations": [{"id": "12", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": 5}}]}
-{"operations": [{"id": "13", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 0}}]}
-{"operations": [{"id": "14", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 10}}]}
-{"operations": [{"id": "15", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 1}}]}
-{"operations": [{"id": "16", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": -1}}]}
-{"operations": [{"id": "1", "object_identifier": "prueba1", "object_type": "RList", "operation": "identifier"}]}
-{"operations": [{"id": "1", "object_identifier": "my_list", "object_type": "RList", "operation": "iter"}]}
+[{"id": "1", "object_identifier": "my_list", "object_type": "RList", "operation": "append", "args": {"item": "apple"}}, {"id": "7", "object_identifier": "my_list", "object_type": "RList", "operation": "append", "args": {"item": "orange"}}, {"id": "2", "object_identifier": "my_list", "object_type": "RList", "operation": "append", "args": {"item": "banana"}}]
+[{"id": "3", "object_identifier": "my_list", "object_type": "RList", "operation": "length"}, {"id": "4", "object_identifier": "my_list", "object_type": "RList", "operation": "contains", "args": {"item": "apple"}}, {"id": "5", "object_identifier": "my_list", "object_type": "RList", "operation": "contains", "args": {"item": "grape"}}]
+[{"id": "6", "object_identifier": "my_list", "object_type": "RList", "operation": "remove", "args": {"item": "banana"}}, {"id": "7", "object_identifier": "my_list", "object_type": "RList", "operation": "remove", "args": {"item": "orange"}}, {"id": "8", "object_identifier": "my_list", "object_type": "RList", "operation": "hash"}]
+[{"id": "9", "object_identifier": "my_list", "object_type": "RList", "operation": "hash"}, {"id": "10", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {}}, {"id": "11", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": 0}}]
+[{"id": "12", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": 5}}, {"id": "13", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 0}}, {"id": "14", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 10}}]
+[{"id": "15", "object_identifier": "my_list", "object_type": "RList", "operation": "getItem", "args": {"index": 1}}, {"id": "16", "object_identifier": "my_list", "object_type": "RList", "operation": "pop", "args": {"index": -1}}, {"id": "1", "object_identifier": "prueba1", "object_type": "RList", "operation": "identifier"}]
+[{"id": "1", "object_identifier": "my_list", "object_type": "RList", "operation": "iter"}]
 ```
 
 #### OPERACIONES PARA LA RSET:
+
 ```
-{"operations": [{"id": "1", "object_identifier": "my_set", "object_type": "RSet", "operation": "add", "args": {"item": "apple"}}]}
-{"operations": [{"id": "2", "object_identifier": "my_set", "object_type": "RSet", "operation": "add", "args": {"item": "banana"}}]}
-{"operations": [{"id": "7", "object_identifier": "my_set", "object_type": "RSet", "operation": "add", "args": {"item": "orange"}}]}
-{"operations": [{"id": "3", "object_identifier": "my_set", "object_type": "RSet", "operation": "length"}]}
-{"operations": [{"id": "4", "object_identifier": "my_set", "object_type": "RSet", "operation": "contains", "args": {"item": "apple"}}]}
-{"operations": [{"id": "5", "object_identifier": "my_set", "object_type": "RSet", "operation": "contains", "args": {"item": "grape"}}]}
-{"operations": [{"id": "6", "object_identifier": "my_set", "object_type": "RSet", "operation": "remove", "args": {"item": "banana"}}]}
-{"operations": [{"id": "7", "object_identifier": "my_set", "object_type": "RSet", "operation": "remove", "args": {"item": "orange"}}]}
-{"operations": [{"id": "8", "object_identifier": "my_set", "object_type": "RSet", "operation": "hash"}]}
-{"operations": [{"id": "9", "object_identifier": "my_set", "object_type": "RSet", "operation": "hash"}]}
-{"operations": [{"id": "10", "object_identifier": "my_set", "object_type": "RSet", "operation": "pop", "args": {}}]}
-{"operations": [{"id": "1", "object_identifier": "my_set", "object_type": "RSet", "operation": "identifier"}]}
-{"operations": [{"id": "1", "object_identifier": "my_set", "object_type": "RSet", "operation": "iter"}]}
+[{"id": "1", "object_identifier": "my_set", "object_type": "RSet", "operation": "add", "args": {"item": "apple"}}, {"id": "2", "object_identifier": "my_set", "object_type": "RSet", "operation": "add", "args": {"item": "banana"}}, {"id": "7", "object_identifier": "my_set", "object_type": "RSet", "operation": "add", "args": {"item": "orange"}}]
+[{"id": "3", "object_identifier": "my_set", "object_type": "RSet", "operation": "length"}, {"id": "4", "object_identifier": "my_set", "object_type": "RSet", "operation": "contains", "args": {"item": "apple"}}, {"id": "5", "object_identifier": "my_set", "object_type": "RSet", "operation": "contains", "args": {"item": "grape"}}]
+[{"id": "6", "object_identifier": "my_set", "object_type": "RSet", "operation": "remove", "args": {"item": "banana"}}, {"id": "7", "object_identifier": "my_set", "object_type": "RSet", "operation": "remove", "args": {"item": "orange"}}, {"id": "8", "object_identifier": "my_set", "object_type": "RSet", "operation": "hash"}]
+[{"id": "9", "object_identifier": "my_set", "object_type": "RSet", "operation": "hash"}, {"id": "10", "object_identifier": "my_set", "object_type": "RSet", "operation": "pop", "args": {}}, {"id": "1", "object_identifier": "my_set", "object_type": "RSet", "operation": "identifier"}]
+[{"id": "1", "object_identifier": "my_set", "object_type": "RSet", "operation": "iter"}] 
 ```
+
 #### OPERACIONES PARA RDICT:
+
 ```
-{"operations": [{"id": "1", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "apple", "value": "10"}}]}
-{"operations": [{"id": "2", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "banana", "value": "20"}}]}
-{"operations": [{"id": "3", "object_identifier": "my_dict", "object_type": "RDict", "operation": "length"}]}
-{"operations": [{"id": "4", "object_identifier": "my_dict", "object_type": "RDict", "operation": "contains", "args": {"item": "apple"}}]}
-{"operations": [{"id": "5", "object_identifier": "my_dict", "object_type": "RDict", "operation": "contains", "args": {"item": "grape"}}]}
-{"operations": [{"id": "6", "object_identifier": "my_dict", "object_type": "RDict", "operation": "remove", "args": {"item": "apple"}}]}
-{"operations": [{"id": "7", "object_identifier": "my_dict", "object_type": "RDict", "operation": "remove", "args": {"item": "orange"}}]}
-{"operations": [{"id": "8", "object_identifier": "my_dict", "object_type": "RDict", "operation": "hash"}]}
-{"operations": [{"id": "9", "object_identifier": "my_dict", "object_type": "RDict", "operation": "hash"}]}
-{"operations": [{"id": "10", "object_identifier": "my_dict", "object_type": "RDict", "operation": "getItem", "args": {"item": "apple"}}]}
-{"operations": [{"id": "11", "object_identifier": "my_dict", "object_type": "RDict", "operation": "getItem", "args": {"item": "grape"}}]}
-{"operations": [{"id": "12", "object_identifier": "my_dict", "object_type": "RDict", "operation": "pop", "args": {"item": "apple"}}]}
-{"operations": [{"id": "13", "object_identifier": "my_dict", "object_type": "RDict", "operation": "pop", "args": {"item": "grape"}}]}
-{"operations": [{"id": "14", "object_identifier": "my_dict", "object_type": "RDict", "operation": "getItem", "args": {"item": "banana"}}]}
-{"operations": [{"id": "15", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "banana", "value": "25"}}]}
-{"operations": [{"id": "16", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "apple", "value": "15"}}]}
-{"operations": [{"id": "1", "object_identifier": "Dicc", "object_type": "RDict", "operation": "identifier"}]}
-{"operations": [{"id": "1", "object_identifier": "Conjunto", "object_type": "RDict", "operation": "iter"}]}
+[{"id": "1", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "apple", "value": "10"}}, {"id": "2", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "banana", "value": "20"}}]
+[{"id": "3", "object_identifier": "my_dict", "object_type": "RDict", "operation": "length"}, {"id": "4", "object_identifier": "my_dict", "object_type": "RDict", "operation": "contains", "args": {"item": "apple"}}, {"id": "5", "object_identifier": "my_dict", "object_type": "RDict", "operation": "contains", "args": {"item": "grape"}}]
+[{"id": "6", "object_identifier": "my_dict", "object_type": "RDict", "operation": "remove", "args": {"item": "apple"}}, {"id": "7", "object_identifier": "my_dict", "object_type": "RDict", "operation": "remove", "args": {"item": "orange"}}, {"id": "8", "object_identifier": "my_dict", "object_type": "RDict", "operation": "hash"}]
+[{"id": "9", "object_identifier": "my_dict", "object_type": "RDict", "operation": "hash"}, {"id": "10", "object_identifier": "my_dict", "object_type": "RDict", "operation": "getItem", "args": {"item": "apple"}}, {"id": "11", "object_identifier": "my_dict", "object_type": "RDict", "operation": "getItem", "args": {"item": "grape"}}]
+[{"id": "12", "object_identifier": "my_dict", "object_type": "RDict", "operation": "pop", "args": {"item": "apple"}}, {"id": "13", "object_identifier": "my_dict", "object_type": "RDict", "operation": "pop", "args": {"item": "grape"}}, {"id": "14", "object_identifier": "my_dict", "object_type": "RDict", "operation": "getItem", "args": {"item": "banana"}}]
+[{"id": "15", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "banana", "value": "25"}}, {"id": "16", "object_identifier": "my_dict", "object_type": "RDict", "operation": "setItem", "args": {"item": "apple", "value": "15"}}, {"id": "1", "object_identifier": "Dicc", "object_type": "RDict", "operation": "identifier"}]
+[{"id": "1", "object_identifier": "Conjunto", "object_type": "RDict", "operation": "iter"}]
 ```
 
 #### OPERACIONES FALTANDO ELEMENTOS CLAVES:
 En este caso ha sido comprobado que no se llega a ejecutar la operación, es descartada.
 
 ```
-{"operations": [{"object_identifier": "Dicc", "object_type": "RDict", "operation": "identifier"}]}
-{"operations": [{"id": "1", "object_type": "RDict", "operation": "identifier"}]}
-{"operations": [{"id": "1", "object_identifier": "Dicc", "operation": "identifier"}]}
-{"operations": [{"id": "1", "object_identifier": "Dicc", "object_type": "RDict"}]}
+[{"object_identifier": "Dicc", "object_type": "RDict", "operation": "identifier"}] 
+[{"id": "1", "object_type": "RDict", "operation": "identifier"}]
+[{"id": "1", "object_identifier": "Dicc", "operation": "identifier"}]
+[{"id": "1", "object_identifier": "Dicc", "object_type": "RDict"}]
 ```
 
 ## Mejoras

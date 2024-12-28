@@ -1,6 +1,6 @@
 import yaml
 import os
-from remotetypes.kafka_client import KafkaClient
+from kafka_client import KafkaClient
 
 def load_config(file_path: str = "config.yaml") -> dict:
     """Carga la configuración desde un archivo YAML."""
@@ -12,14 +12,15 @@ def load_config(file_path: str = "config.yaml") -> dict:
 
 
 if __name__ == "__main__":
-
     config = load_config()
     kafka_config = config['kafka']
+    remotetypes_config = config['remotetypes']
 
     client = KafkaClient(
         server=kafka_config['server'],
         input_topic=kafka_config['input_topic'],
         output_topic=kafka_config['output_topic'],
-        group_id=kafka_config['group_id']
+        group_id=kafka_config['group_id'],
+        remotetypes_proxy=remotetypes_config['proxy']
     )
     client.consume_messages()

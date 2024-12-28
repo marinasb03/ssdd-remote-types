@@ -3,16 +3,18 @@ from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
 import logging
 import sys
 import Ice
-from typing import List
+from typing import List, Dict
 Ice.loadSlice("remotetypes.ice")
 import RemoteTypes as rt  # type: ignore
 
+
 class KafkaClient:
-    def __init__(self, server: str, input_topic: str, output_topic: str, group_id: str):
+    def __init__(self, server: str, input_topic: str, output_topic: str, group_id: str, remotetypes_proxy: str):
         self.server = server
         self.input_topic = input_topic
         self.output_topic = output_topic
         self.group_id = group_id
+        self.remotetypes_proxy = remotetypes_proxy
 
         self.consumer = Consumer({
             'bootstrap.servers': self.server,
@@ -43,60 +45,51 @@ class KafkaClient:
                 self.logger.info(f"Mensaje recibido (raw): {raw_message}")
 
                 try:
-                    event = json.loads(raw_message)
-                    self.logger.info("Evento recibido: %s", event)
-                    self.process_event(event)
+                    events = json.loads(raw_message)
+                    if not isinstance(events, list):
+                        raise ValueError("El mensaje recibido no es un array.")
+                    self.process_events(events)
                 except json.JSONDecodeError as e:
                     self.logger.error(f"Error al procesar el JSON: {e}")
                     continue
+                except ValueError as e:
+                    self.logger.error(f"Formato incorrecto: {e}")
+                    continue
+
                 self.consumer.commit()
             except Exception as e:
                 self.logger.error(f"Error al consumir mensajes: {e}")
 
-    def process_event(self, event: dict):
+    def process_events(self, events: List[dict]):
         responses = []
-        operations = event.get("operations", [])
-        if not operations:
-            self.logger.error("No se encontraron operaciones en el evento")
-            return
-
-        for operation in operations:
-            
-
+        for operation in events:
             try:
                 if not self.validate_operation_format(operation):
                     self.logger.info(f"Operación descartada: {operation}")
-                    continue 
-                    
-                self.validate_operation_format(operation)
+                    continue
                 response = self.execute_operation(operation)
-                responses.append(response)  
-
-                
+                responses.append(response)
             except Exception as e:
                 responses.append({
                     "id": operation.get("id", "unknown"),
                     "status": "error",
-                    "error": str(type(e).__name__)
+                    "error": str(e)
                 })
 
         self.publish_responses(responses)
 
-    def validate_operation_format(self, operation: dict):
-        if "id" not in operation:
-            self.logger.warning(f"Operación descartada por falta de 'id': {operation}")
-            return False
-        
-        required_fields = ["object_identifier", "object_type", "operation"] 
+    def validate_operation_format(self, operation: dict) -> bool:
+        required_fields = ["id", "object_identifier", "object_type", "operation"]
         for field in required_fields:
             if field not in operation:
                 raise ValueError(f"Campo requerido '{field}' faltante en la operación.")
-        
+
         if operation["operation"] in ["add", "remove", "setItem", "getItem", "pop", "contains", "append"]:
             if "args" not in operation:
                 raise ValueError(f"La operación '{operation['operation']}' requiere argumentos.")
         
         return True
+
     def execute_operation(self, operation: dict):
         """Ejecuta una operación invocando al servidor remoto."""
         object_type = operation["object_type"]
@@ -106,7 +99,7 @@ class KafkaClient:
 
         try:
             with Ice.initialize(sys.argv) as communicator:
-                proxy = communicator.stringToProxy("factory:default -p 10000")
+                proxy = communicator.stringToProxy(self.remotetypes_proxy)
                 factory = rt.FactoryPrx.checkedCast(proxy)
                 if not factory:
                     raise RuntimeError("No se pudo conectar con el servidor remoto.")
@@ -120,24 +113,18 @@ class KafkaClient:
 
                 self.logger.info(f"Ejecutando operación '{op_name}' en '{object_identifier}' con argumentos: {args}")
 
-                if object_type == "RDict":
-                    result = self.execute_rdict_operation(obj, op_name, args)
-                    
-                elif object_type == "RList":
-                    result = self.execute_rlist_operation(obj, op_name, args)
-             
-                elif object_type == "RSet":
-                    result = self.execute_rset_operation(obj, op_name, args)    
-                  
-                else:
-                    raise ValueError(f"Operación no soportada para el tipo de objeto {object_type}")
+                handler_class = OperationHandlerFactory.get_handler(object_type)
+                result = handler_class.execute(obj, op_name, args)
 
+                # Retorno en caso de éxito
                 return {
                     "id": operation["id"],
                     "status": "ok",
-                    "result": result
+                    "result": result if result is not None else None
                 }
+
         except Exception as e:
+            # Retorno en caso de error
             self.logger.error(f"Error al ejecutar la operación: {e}")
             return {
                 "id": operation["id"],
@@ -145,7 +132,33 @@ class KafkaClient:
                 "error": str(e)
             }
 
-    def execute_rdict_operation(self, obj, op_name, args):
+
+    def publish_responses(self, responses: List[dict]):
+        try:
+            message = json.dumps(responses).encode("utf-8")
+            self.producer.produce(self.output_topic, value=message)
+            self.producer.flush()
+            self.logger.info(f"Respuestas publicadas: {responses}")
+        except KafkaException as e:
+            self.logger.error(f"Error al publicar la respuesta: {e}")
+
+
+class OperationHandlerFactory:
+    """Fábrica para obtener el manejador de operaciones adecuado según el tipo."""
+    @staticmethod
+    def get_handler(object_type: str):
+        if object_type == "RDict":
+            return RDictHandler()
+        elif object_type == "RList":
+            return RListHandler()
+        elif object_type == "RSet":
+            return RSetHandler()
+        else:
+            raise ValueError(f"Tipo de objeto no soportado: {object_type}")
+
+
+class RDictHandler:
+    def execute(self, obj, op_name, args):
         if op_name == "remove":
             try:
                 obj.remove(args["item"])
@@ -170,9 +183,11 @@ class KafkaClient:
 
         else:
             raise ValueError(f"OperationNotSupported: {op_name}")
+        pass
 
 
-    def execute_rlist_operation(self, obj, op_name, args):
+class RListHandler:
+    def execute(self, obj, op_name, args):
         if op_name == "remove":
             try:
                 obj.remove(args["item"])
@@ -199,8 +214,11 @@ class KafkaClient:
             return obj.getItem(args["index"])
         else:
             raise ValueError(f"OperationNotSupported: {op_name}")
+        pass
 
-    def execute_rset_operation(self, obj, op_name, args):
+
+class RSetHandler:
+    def execute(self, obj, op_name, args):
         if op_name == "remove":
             try:
                 obj.remove(args["item"])
@@ -222,12 +240,7 @@ class KafkaClient:
             return obj.pop()
         else:
             raise ValueError(f"OperationNotSupported: {op_name}")
+        pass
 
-    def publish_responses(self, responses: List[dict]):
-        try:
-            message = json.dumps({"responses": responses}).encode("utf-8")
-            self.producer.produce(self.output_topic, value=message)
-            self.producer.flush()
-            self.logger.info(f"Respuestas publicadas: {responses}")
-        except KafkaException as e:
-            self.logger.error(f"Error al publicar la respuesta: {e}")
+
+        
