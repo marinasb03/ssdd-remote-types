@@ -20,6 +20,7 @@ license = "GPL-3.0-only"
 
 [project.scripts]
 remotetypes = "remotetypes.command_handlers:remotetypes_server"
+remotetypes-kafka-client = "remotetypes.command_handlers:kafka_client"
 
 [project.optional-dependencies]
 tests = ["pytest"]

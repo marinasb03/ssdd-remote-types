@@ -1,15 +1,19 @@
+"""Cliente kafka."""
 import json
 from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
 import logging
 import sys
 import Ice
 from typing import List, Dict
-Ice.loadSlice("remotetypes.ice")
+import os
+ICE_FILE = os.path.join(os.path.dirname(__file__), "remotetypes.ice")
+Ice.loadSlice(ICE_FILE)
 import RemoteTypes as rt  # type: ignore
 
 
 class KafkaClient:
     def __init__(self, server: str, input_topic: str, output_topic: str, group_id: str, remotetypes_proxy: str):
+        """Inicialización."""
         self.server = server
         self.input_topic = input_topic
         self.output_topic = output_topic
@@ -61,6 +65,7 @@ class KafkaClient:
                 self.logger.error(f"Error al consumir mensajes: {e}")
 
     def process_events(self, events: List[dict]):
+        """Procesa."""
         responses = []
         for operation in events:
             try:
@@ -79,6 +84,7 @@ class KafkaClient:
         self.publish_responses(responses)
 
     def validate_operation_format(self, operation: dict) -> bool:
+        """Valida Operaciones."""
         required_fields = ["id", "object_identifier", "object_type", "operation"]
         for field in required_fields:
             if field not in operation:
@@ -134,6 +140,7 @@ class KafkaClient:
 
 
     def publish_responses(self, responses: List[dict]):
+        """Publica las respuestas."""
         try:
             message = json.dumps(responses).encode("utf-8")
             self.producer.produce(self.output_topic, value=message)
@@ -158,7 +165,9 @@ class OperationHandlerFactory:
 
 
 class RDictHandler:
+    """Clase RDict."""
     def execute(self, obj, op_name, args):
+        """Ejecución operaciones de Dict."""
         if op_name == "remove":
             try:
                 obj.remove(args["item"])
@@ -185,9 +194,10 @@ class RDictHandler:
             raise ValueError(f"OperationNotSupported: {op_name}")
         pass
 
-
 class RListHandler:
+    """Clase RList."""
     def execute(self, obj, op_name, args):
+        """Ejecución operaciones de List."""
         if op_name == "remove":
             try:
                 obj.remove(args["item"])
@@ -216,9 +226,10 @@ class RListHandler:
             raise ValueError(f"OperationNotSupported: {op_name}")
         pass
 
-
 class RSetHandler:
+    """Clase RSet."""
     def execute(self, obj, op_name, args):
+        """Ejecución operaciones Set."""
         if op_name == "remove":
             try:
                 obj.remove(args["item"])
@@ -241,6 +252,3 @@ class RSetHandler:
         else:
             raise ValueError(f"OperationNotSupported: {op_name}")
         pass
-
-
-        

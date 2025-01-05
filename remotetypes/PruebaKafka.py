@@ -1,3 +1,4 @@
+"""Inicialización del cliente kafka."""
 import yaml
 import os
 from kafka_client import KafkaClient

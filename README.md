@@ -5,6 +5,38 @@
 2. Ya se está publicando directamente el array de respuestas (responses), sin envolverlo en un diccionario. En el código actual, en lugar de enviar un diccionario con la clave "responses", envío directamente el array responses.
 3. Actualmente, el proxy al servicio remotetypes ya no está hardcoded en el código. En lugar de definirlo de forma rígida en la línea 109 de kafka_client.py, el proxy ahora se carga de forma configurable desde el archivo config.yaml
 4. El código ya tiene una estructura que sigue parcialmente el principio, ya que he encapsulado las operaciones en clases específicas como RDictHandler, RListHandler, y RSetHandler. Además, la fábrica OperationHandlerFactory facilita la elección del manejador adecuado según el tipo de objeto.
+5. El proyecto ya tiene el cliente kafka como una entrada en el pyproject.
+
+## Cliente kafka como entrada en el pyproject
+
+Para cumplir con esta tarea, realicé los siguientes pasos:
+
+1. *Migración de Lógica a command_handlers.py:* Primero, trasladé toda la lógica de la clase PruebaKafka.py a la clase command_handlers.py. Este cambio permitió centralizar la gestión del cliente Kafka dentro del archivo command_handlers.py, facilitando su ejecución posterior dentro del flujo del proyecto.
+
+2. *Modificación en el Archivo kafka_client.py:* En el archivo kafka_client.py, tuve que realizar un ajuste específico en la forma en que se carga el archivo remotetypes.ice. Originalmente, el código cargaba el archivo de la siguiente manera:
+```
+Ice.loadSlice("remotetypes.ice")
+```
+Sin embargo, debido a la necesidad de gestionar las rutas correctamente en el entorno de ejecución, modifiqué esa línea para utilizar una ruta absoluta.
+```
+import os
+ICE_FILE = os.path.join(os.path.dirname(__file__), "remotetypes.ice")
+Ice.loadSlice(ICE_FILE)
+```
+Esta modificación asegura que la ruta al archivo remotetypes.ice se maneje de manera más robusta, independientemente de dónde se ejecute el script.
+
+3. *Actualización de Dependencias:* Tras realizar los cambios, volví a instalar las dependencias del proyecto para asegurar que todos los ajustes y modificaciones se reflejaran correctamente. Esto lo hice con el siguiente comando:
+```
+pip install -e .
+```
+
+4. *Ejecución del Cliente Kafka:* Finalmente, para ejecutar el cliente Kafka, desde el directorio remotetypes, que es donde se encuentra el archivo de configuración realizo el siguiente comando: 
+```
+remotetypes-kafka-client config.yaml
+```
+
+Con estos pasos, el cliente Kafka está correctamente integrado como entrada en el proyecto y puede ejecutarse directamente desde la ubicación configurada, asegurando la correcta carga de las dependencias y la ejecución del cliente con los parámetros adecuados.
+
 
 ## Entregable 2
 ### Introducción
@@ -15,7 +47,7 @@ Lo primero que he hecho ha sido solucionar el problema con la clase `iterable`, 
 He creado los siguientes archivos para este entregable:
 
 - **`config.yaml`**: Archivo de configuración en formato YAML donde describo las características del servidor Kafka.
-- **`PruebaKafka.py`**: Archivo Python que carga la configuración del servidor Kafka y lanza el cliente Kafka que he desarrollado para procesar las operaciones.
+- **`PruebaKafka.py`**: Este archivo Python estaba originalmente encargado de cargar la configuración del servidor Kafka y lanzar el cliente Kafka desarrollado para procesar las operaciones. Sin embargo, he trasladado esta lógica a la clase command_handlers. A pesar de este cambio, he mantenido PruebaKafka.py como una opción adicional para la inicialización del cliente Kafka, de modo que aún se pueda utilizar como una alternativa en caso de ser necesario.
 - **`kafka_client.py`**: Archivo Python donde he implementado todas las operaciones necesarias para recibir, procesar, ejecutar y devolver las respuestas a las operaciones introducidas.
 
 ### Configuración del servidor Kafka
@@ -80,11 +112,17 @@ Consumidor Kafka:
     ```
         remotetypes --Ice.Config=config/remotetypes.config
     ```
-    Luego, he lanzado el archivo PruebaKafka.py, que carga la configuración del servidor Kafka e inicializa el cliente:
+    Tras realizar las modificaciones, ahora existe la posibilidad de ejecutar la inicialización del cliente de Kafka de dos maneras diferentes. Originalmente, la ejecución se realizaba mediante el archivo PruebaKafka.py, que carga la configuración del servidor Kafka e inicializa el cliente. Para ejecutarlo de esta forma, se utilizaba el siguiente comando:
     ```
         python3 PruebaKafka.py
     ```
-    El cual si no se encuentra el servidor kafka en activo, no se ejecutará correctamente.
+    Sin embargo, con la última modificación que implementé, he adaptado el proceso para que pueda ejecutarse directamente como una entrada desde el pyproject, utilizando el siguiente comando:
+    ```
+        remotetypes-kafka-client config.yaml
+    ```
+    De esta forma, ya no es necesario ejecutar el archivo Python directamente. Ahora, la inicialización del cliente está integrada en el pyproject, lo que facilita su ejecución de manera más eficiente.
+
+    Es importante mencionar que, independientemente de la forma de ejecución, en ambos casos, el cliente requiere que el servidor Kafka esté activo para funcionar correctamente. Si el servidor Kafka no está en funcionamiento, la inicialización no se llevará a cabo con éxito en ninguno de los dos métodos.
 
 *Flujo de trabajo*
 
