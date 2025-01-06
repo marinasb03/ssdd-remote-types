@@ -1,5 +1,5 @@
 # Marina Sobrino Blanco
-## Mejores Entregable 2
+## Mejoras Entregable 2
     
 1. En mi código actual, me aseguro que el mensaje recibido de Kafka sea un array de objetos JSON (lista de diccionarios). Cada evento recibido se maneja correctamente como una lista de diccionarios.
 2. Ya se está publicando directamente el array de respuestas (responses), sin envolverlo en un diccionario. En el código actual, en lugar de enviar un diccionario con la clave "responses", envío directamente el array responses.
