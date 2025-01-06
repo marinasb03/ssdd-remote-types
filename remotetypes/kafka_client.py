@@ -4,15 +4,15 @@ from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
 import logging
 import sys
 import Ice
-from typing import List, Dict
+from typing import List
+import RemoteTypes as rt  # type: ignore
 import os
 ICE_FILE = os.path.join(os.path.dirname(__file__), "remotetypes.ice")
 Ice.loadSlice(ICE_FILE)
-import RemoteTypes as rt  # type: ignore
-
 
 class KafkaClient:
     """Clase Cliente Kafka."""
+
     def __init__(self, server: str, input_topic: str, output_topic: str, group_id: str, remotetypes_proxy: str):
         """Inicialización."""
         self.server = server
