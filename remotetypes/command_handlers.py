@@ -27,7 +27,7 @@ def kafka_client():
         """Carga la configuración desde un archivo YAML."""
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"No se encuentra el archivo de configuración: {file_path}")
-        
+
         with open(file_path, "r") as file:
             return yaml.safe_load(file)
 

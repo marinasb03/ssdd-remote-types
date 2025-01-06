@@ -12,6 +12,7 @@ import RemoteTypes as rt  # type: ignore
 
 
 class KafkaClient:
+    """Clase Cliente Kafka."""
     def __init__(self, server: str, input_topic: str, output_topic: str, group_id: str, remotetypes_proxy: str):
         """Inicialización."""
         self.server = server
@@ -93,7 +94,7 @@ class KafkaClient:
         if operation["operation"] in ["add", "remove", "setItem", "getItem", "pop", "contains", "append"]:
             if "args" not in operation:
                 raise ValueError(f"La operación '{operation['operation']}' requiere argumentos.")
-        
+
         return True
 
     def execute_operation(self, operation: dict):
@@ -115,7 +116,7 @@ class KafkaClient:
 
                 obj = getattr(rt, f"{object_type}Prx").checkedCast(obj_proxy)
                 if not obj:
-                    raise ValueError(f"No se pudo obtener el proxy del objeto {object_identifier} de tipo {object_type}.")
+                    raise ValueError(f"No se obtuvo el proxy del objeto {object_identifier} de tipo {object_type}.")
 
                 self.logger.info(f"Ejecutando operación '{op_name}' en '{object_identifier}' con argumentos: {args}")
 
@@ -152,8 +153,10 @@ class KafkaClient:
 
 class OperationHandlerFactory:
     """Fábrica para obtener el manejador de operaciones adecuado según el tipo."""
+
     @staticmethod
     def get_handler(object_type: str):
+        """Get handler."""
         if object_type == "RDict":
             return RDictHandler()
         elif object_type == "RList":
@@ -166,6 +169,7 @@ class OperationHandlerFactory:
 
 class RDictHandler:
     """Clase RDict."""
+
     def execute(self, obj, op_name, args):
         """Ejecución operaciones de Dict."""
         if op_name == "remove":
@@ -196,6 +200,7 @@ class RDictHandler:
 
 class RListHandler:
     """Clase RList."""
+
     def execute(self, obj, op_name, args):
         """Ejecución operaciones de List."""
         if op_name == "remove":
@@ -228,6 +233,7 @@ class RListHandler:
 
 class RSetHandler:
     """Clase RSet."""
+
     def execute(self, obj, op_name, args):
         """Ejecución operaciones Set."""
         if op_name == "remove":
